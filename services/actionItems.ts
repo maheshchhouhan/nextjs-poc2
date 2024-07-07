@@ -7,14 +7,14 @@ import { getAuthToken } from "./utils";
 
 export async function getActionItems() {
 
-    const connection = await pool.getConnection();
+    // const connection = await pool.getConnection();
 
     const auth_token = await getAuthToken();
 
     if (!auth_token) {
         return { items: [], accessDenied: true };
     }
-
+    console.log("Calling getActionItems");
     try {
 
         const response = await fetch('https://dev.exp-inc.com/EXPDev71/api/actionItems/searchActionItems', {
@@ -57,11 +57,12 @@ export async function getActionItems() {
         });
 
         const result = await response.json();
+        console.log(result);
         // return NextResponse.json({ statusCode: result.statusCode, message: result.message, data: result.data });
         return { items: result.data, accessDenied: false };
     } catch (error) {
         return { items: [], accessDenied: false };
     } finally {
-        connection.release();
+        // connection.release();
     }
 }

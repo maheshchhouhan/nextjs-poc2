@@ -59,7 +59,7 @@ export async function updateUser(user: { id: number; name: string; email: string
 }
 
 export async function Authenticate(userName: string, password: string, clientId: string) {
-  const connection = await pool.getConnection();
+  // const connection = await pool.getConnection();
   try {
 
     const response = await fetch('https://dev.exp-inc.com/EXPDev71/api/users/authenticateUser', {
@@ -85,6 +85,6 @@ export async function Authenticate(userName: string, password: string, clientId:
   } catch (error) {
     return NextResponse.json({ error: 'Failed to update user' }, { status: 500 });
   } finally {
-    connection.release();
+    // connection.release();
   }
 }
