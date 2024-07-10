@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { Box, CssBaseline, Container } from '@mui/material';
 import Navbar from '@/components/Navbar';
-import Sidebar from '@/components/Sidebar';
+// import Sidebar from '@/components/Sidebar';
 
 function ClientLayout({ children }: { children: React.ReactNode }) {
   const { data: session, status } = useSession();
@@ -22,7 +22,7 @@ function ClientLayout({ children }: { children: React.ReactNode }) {
 
   return session ? (
     <Box sx={{ display: 'flex' }}>
-      <Sidebar />
+      {/* <Sidebar /> */}
       <Box component="main" sx={{ flexGrow: 1 }}>
         <Navbar />
         <Container maxWidth="md" sx={{ mt: 4 }}>
