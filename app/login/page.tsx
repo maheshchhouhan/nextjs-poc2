@@ -1,9 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { Authenticate } from "@/services/users";
 
 import {
   Button,
@@ -17,6 +15,7 @@ import {
 } from "@mui/material";
 import { useFormik } from "formik";
 import { loginValidationSchema } from "@/validationSchema";
+import { Authenticate } from "@/services/auth";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -42,27 +41,18 @@ export default function LoginPage() {
     validationSchema: loginValidationSchema,
     onSubmit: async (values) => {
       try {
-
-        // Next Auth
-        // const result = await signIn("credentials", {
-        //   redirect: false,
-        //   email: values.email,
-        //   password: values.password,
-        // });
-
-        // Using EXP API Login
         const result = await Authenticate(values.email, values.password, "1");
-
-        if (result.status != 200) {
+        console.log("result: ", result);
+        if (result.status !== 200) {
           setSeverity("error");
-          // setMessage(result.error);
-          setOpen(true);
+          setMessage(result.error || "Authentication failed");
         } else {
           setSeverity("success");
           setMessage("Login successful!");
-          setOpen(true);
-          router.push("/users");
+          router.push("/actionItems");
         }
+
+        setOpen(true);
       } catch (error) {
         console.error("Error during signIn:", error);
         setSeverity("error");

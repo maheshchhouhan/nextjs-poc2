@@ -1,0 +1,85 @@
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model ActionItem {
+  id                            Int       @id @default(autoincrement())
+  actionNum                     String
+  source                        String
+  referenceID                   Int
+  item                          String
+  assignedToID                  Int
+  assignedToUser                String
+  assignedWorkGroupID           Int
+  assignedWorkGroupName         String?
+  assignedWorkGroupDetail       String?
+  targetDate                    DateTime
+  compDate                      DateTime?
+  verifiedDate                  DateTime?
+  directCost                    Int
+  indirectHours                 Int
+  createdBy                     Int
+  createdByName                 String
+  createdDate                   DateTime
+  updatedBy                     Int?
+  updatedByName                 String?
+  updatedDate                   DateTime?
+  notifiedDate                  DateTime
+  priority                      Int
+  priorityS                     String
+  mgmtResponse                  String
+  recommendationLevelID         Int
+  recommendationLevel           String?
+  approverID                    Int
+  isApprovalRequired            Boolean
+  isApproved                    Boolean
+  locationId                    Int
+  hseCodeId                     Int
+  hseCodeName                   String
+  completeBeforeSubmitForApproval Boolean
+  actionItemSource              String
+  clientID                      Int
+  abbr                          String
+  isVerificationRequired        Boolean
+  verificationAssignedToID      Int
+  reportNum                     String
+  reportDescription             String
+  locationPath                  String
+  description                   String
+  currencyID                    Int
+  currencyvthCode               String
+  rootCauseId                   Int?
+  rootCause                     RootCause? @relation(fields: [rootCauseId], references: [id])
+  subSource                     String?
+  newVarcharId1                 String?
+  findingDescription            String?
+  permitStatus                  String?
+  preventive                    String
+  resetReason                   String?
+  newTargetDate                 DateTime?
+  completedBy                   Int?
+  completedByName               String?
+  verifiedBy                    Int?
+  verifiedByName                String?
+  answerID                      Int
+  repeatAnswerID                Int
+  ansSource                     String
+  ansSourceID                   Int
+  ansSubSource                  String
+  ansSubSourceID                Int
+  recurringActionID             Int?
+  isPostStartUp                 Boolean
+  createdAt                     DateTime @default(now())
+  updatedAt                     DateTime @updatedAt
+}
+
+model RootCause {
+  id          Int        @id @default(autoincrement())
+  description String
+  actionItems ActionItem[]
+}

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Table,
   TableBody,
@@ -14,13 +14,13 @@ import {
   Snackbar,
   Alert,
   Box,
-  Grid,
   useMediaQuery,
   useTheme,
   Typography,
   Hidden,
 } from "@mui/material";
-import { ActionItem, User } from "@/types";
+import { ActionItem } from "@/types";
+import { fetchLocalItems, createNewActionItem } from "@/services/actionItems";
 
 type ActionItemTableProps = {
   items: ActionItem[];
@@ -34,9 +34,13 @@ export default function ActionItemTable({ items }: ActionItemTableProps) {
   const [snackbarSeverity, setSnackbarSeverity] = useState<"success" | "error">(
     "success"
   );
-
+  const [localItems, setLocalItems] = useState<ActionItem[]>([]);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
+  useEffect(() => {
+    fetchLocalItems().then(setLocalItems);
+  }, []);
 
   const handleEdit = (id: number) => {
     setEditRows({ ...editRows, [id]: true });
@@ -47,15 +51,6 @@ export default function ActionItemTable({ items }: ActionItemTableProps) {
     const item = editedUsers.find((item) => item.id === id);
 
     if (item) {
-      // Update Action item
-      // const result = await updateUser(items);
-      // if (result.success) {
-      //   setSnackbarMessage("User updated successfully");
-      //   setSnackbarSeverity("success");
-      // } else {
-      //   setSnackbarMessage(result.message || "Failed to update item");
-      //   setSnackbarSeverity("error");
-      // }
       setSnackbarOpen(true);
     }
   };
@@ -72,18 +67,96 @@ export default function ActionItemTable({ items }: ActionItemTableProps) {
     setSnackbarOpen(false);
   };
 
+  const handleCreateNewActionItem = async () => {
+    if (editedUsers.length === 0) return;
+
+    const firstItem = editedUsers[0];
+    const newItem: Partial<ActionItem> = {
+      ...firstItem,
+      description: `Random Description ${Math.random()
+        .toString(36)
+        .substring(7)}`,
+    };
+
+    try {
+      const response = await fetch("/api/items", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newItem),
+      });
+      if (!response.ok) throw new Error("Failed to create action item");
+      const savedItem = await response.json();
+      setLocalItems((prev) => [...prev, savedItem.newItem]);
+      setSnackbarMessage("Action item created successfully");
+      setSnackbarSeverity("success");
+      setSnackbarOpen(true);
+    } catch (error) {
+      setSnackbarMessage("Failed to create action item");
+      setSnackbarSeverity("error");
+      setSnackbarOpen(true);
+    }
+  };
+
   return (
     <>
+      <Box
+        sx={{
+          width: "100%",
+          display: "flex",
+          justifyContent: "flex-end",
+          mb: 2,
+          mt: 12,
+        }}
+      >
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handleCreateNewActionItem}
+        >
+          Create Action Item
+        </Button>
+      </Box>
       <Box sx={{ width: "100%" }}>
+        <Typography variant="h6" gutterBottom>
+          Local Action Items
+        </Typography>
+        <TableContainer component={Paper}>
+          <Table sx={{ width: "100%" }}>
+            <TableHead>
+              <TableRow>
+                <TableCell>Action Item #</TableCell>
+                <TableCell>Location</TableCell>
+                <TableCell>Source</TableCell>
+                <TableCell>Description</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {localItems.map((item) => (
+                <TableRow key={item.id}>
+                  <TableCell>{item.id}</TableCell>
+                  <TableCell>{item.locationPath}</TableCell>
+                  <TableCell>{item.source}</TableCell>
+                  <TableCell>{item.description}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Box>
+      <Box sx={{ width: "100%", mt: 6 }}>
+        <Typography variant="h6" gutterBottom>
+          Online Action Items
+        </Typography>
         <TableContainer component={Paper}>
           <Table sx={{ width: "100%" }}>
             <Hidden smDown>
               <TableHead>
                 <TableRow>
-                  <TableCell>Name</TableCell>
-                  <TableCell>Email</TableCell>
-                  <TableCell>Role</TableCell>
-                  <TableCell>Actions</TableCell>
+                  <TableCell>Action Item #</TableCell>
+                  <TableCell>Location</TableCell>
+                  <TableCell>Action Item Source</TableCell>
                 </TableRow>
               </TableHead>
             </Hidden>
@@ -103,17 +176,9 @@ export default function ActionItemTable({ items }: ActionItemTableProps) {
                         >
                           <Box sx={{ mb: 1 }}>
                             <Typography variant="body2" component="div">
-                              <strong>Action Item #:</strong>{" "}
                               {editRows[item.id] ? (
                                 <TextField
                                   value={item.id.toString()}
-                                  // onChange={(e) =>
-                                  //   handleChange(
-                                  //     item.id,
-                                  //     "name",
-                                  //     e.target.value
-                                  //   )
-                                  // }
                                   fullWidth
                                 />
                               ) : (
@@ -123,17 +188,9 @@ export default function ActionItemTable({ items }: ActionItemTableProps) {
                           </Box>
                           <Box sx={{ mb: 1 }}>
                             <Typography variant="body2" component="div">
-                              <strong>Location:</strong>{" "}
                               {editRows[item.id] ? (
                                 <TextField
                                   value={item.locationPath}
-                                  // onChange={(e) =>
-                                  //   handleChange(
-                                  //     item.id,
-                                  //     "email",
-                                  //     e.target.value
-                                  //   )
-                                  // }
                                   fullWidth
                                 />
                               ) : (
@@ -143,40 +200,12 @@ export default function ActionItemTable({ items }: ActionItemTableProps) {
                           </Box>
                           <Box sx={{ mb: 1 }}>
                             <Typography variant="body2" component="div">
-                              <strong>Action Item Source:</strong>{" "}
                               {editRows[item.id] ? (
-                                <TextField
-                                  value={item.source}
-                                  // onChange={(e) =>
-                                  //   handleChange(
-                                  //     item.id,
-                                  //     "role",
-                                  //     e.target.value
-                                  //   )
-                                  // }
-                                  fullWidth
-                                />
+                                <TextField value={item.source} fullWidth />
                               ) : (
                                 item.source
                               )}
                             </Typography>
-                          </Box>
-                          <Box>
-                            {editRows[item.id] ? (
-                              <Button
-                                onClick={() => handleSave(item.id)}
-                                fullWidth
-                              >
-                                Save
-                              </Button>
-                            ) : (
-                              <Button
-                                onClick={() => handleEdit(item.id)}
-                                fullWidth
-                              >
-                                Edit
-                              </Button>
-                            )}
                           </Box>
                         </Box>
                       </TableCell>
@@ -185,26 +214,14 @@ export default function ActionItemTable({ items }: ActionItemTableProps) {
                     <TableRow>
                       <TableCell>
                         {editRows[item.id] ? (
-                          <TextField
-                            value={item.id}
-                            // onChange={(e) =>
-                            //   handleChange(item.id, "name", e.target.value)
-                            // }
-                            fullWidth
-                          />
+                          <TextField value={item.id} fullWidth />
                         ) : (
                           item.id.toString()
                         )}
                       </TableCell>
                       <TableCell>
                         {editRows[item.id] ? (
-                          <TextField
-                            value={item.locationPath}
-                            // onChange={(e) =>
-                            //   handleChange(item.id, "email", e.target.value)
-                            // }
-                            fullWidth
-                          />
+                          <TextField value={item.locationPath} fullWidth />
                         ) : (
                           item.locationPath
                         )}
@@ -214,23 +231,12 @@ export default function ActionItemTable({ items }: ActionItemTableProps) {
                           <TextField
                             value={item.source}
                             onChange={(e) =>
-                              handleChange(item.id, "role", e.target.value)
+                              handleChange(item.id, "source", e.target.value)
                             }
                             fullWidth
                           />
                         ) : (
                           item.source
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        {editRows[item.id] ? (
-                          <Button onClick={() => handleSave(item.id)}>
-                            Save
-                          </Button>
-                        ) : (
-                          <Button onClick={() => handleEdit(item.id)}>
-                            Edit
-                          </Button>
                         )}
                       </TableCell>
                     </TableRow>

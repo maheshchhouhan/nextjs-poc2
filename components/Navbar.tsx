@@ -1,24 +1,42 @@
-'use client';
+"use client";
 
-import { AppBar, Toolbar, Typography, Button, Box } from '@mui/material';
-import { useSession, signOut } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
+import { AppBar, Toolbar, Typography, Button } from "@mui/material";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export default function Navbar() {
-  const { data: session } = useSession();
   const router = useRouter();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  const handleLogout = () => {
-    signOut({ callbackUrl: '/' });
+  useEffect(() => {
+    // Check if the user is authenticated by checking the auth token
+    const checkAuth = async () => {
+      const response = await fetch("/api/auth-token");
+      const authToken = await response.json();
+      setIsAuthenticated(!!authToken);
+    };
+    checkAuth();
+  }, []);
+
+  const handleLogout = async () => {
+    // Clear the authentication token
+    await fetch("/api/logout", {
+      method: "POST",
+    });
+    // Redirect to the login page
+    router.push("/login");
   };
 
   return (
-    <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+    <AppBar
+      position="fixed"
+      sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}
+    >
       <Toolbar>
         <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
-          Users Management
+          Action Items
         </Typography>
-        {session && (
+        {isAuthenticated && (
           <Button color="inherit" onClick={handleLogout}>
             Logout
           </Button>

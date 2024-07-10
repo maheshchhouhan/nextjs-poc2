@@ -7,40 +7,28 @@ export type User = {
 };
 
 export type ActionItem = {
-  rootCauseId: number;
-  subSource: string;
-  newVarcharId1: string;
-  recommendationLevel: string;
-  locationPath: string;
+  id: number;
   actionNum: string;
-  localActionNum: string;
-  obsNum: string;
-  sourceID: number;
   source: string;
   referenceID: number;
   item: string;
   assignedToID: number;
-  assignedWorkGroupID: number;
-  assignedWorkGroupName: string;
-  assignedWorkGroupDetail: string;
   targetDate: string;
-  newTargetDate: string;
-  resetReason: string;
-  compDate: string;
-  verifiedDate: string;
-  directCost: string;
-  indirectHours: string;
+  compDate?: string;
+  verifiedDate?: string;
+  directCost: number;
+  indirectHours: number;
   createdBy: number;
   createdDate: string;
-  updatedBy: number;
-  updatedDate: string;
+  updatedBy?: number;
+  updatedDate?: string;
   notifiedDate: string;
   priority: number;
   priorityS: string;
   mgmtResponse: string;
   recommendationLevelID: number;
-  completedBy: number;
-  verifiedBy: number;
+  completedBy?: number;
+  verifiedBy?: number;
   currencyID: number;
   currencyvthCode: string;
   preventive: string;
@@ -59,6 +47,7 @@ export type ActionItem = {
   completeBeforeSubmitForApproval: boolean;
   assignedToUser: string;
   actionItemSource: string;
+  clientID: number;
   abbr: string;
   isVerificationRequired: boolean;
   verificationAssignedToID: number;
@@ -71,11 +60,9 @@ export type ActionItem = {
   reportNum: string;
   reportDescription: string;
   findingDescription: string;
+  permitStatus: string;
+  recurringActionID?: number;
   isPostStartUp: boolean;
-  id: number;
+  locationPath: string;
+  description: string;
 };
-
-export interface Credentials {
-  email?: string;
-  password?: string;
-}
