@@ -157,6 +157,7 @@ export default function ActionItemTable({ items }: ActionItemTableProps) {
                   <TableCell>Action Item #</TableCell>
                   <TableCell>Location</TableCell>
                   <TableCell>Action Item Source</TableCell>
+                  <TableCell>Description</TableCell>
                 </TableRow>
               </TableHead>
             </Hidden>
@@ -237,6 +238,19 @@ export default function ActionItemTable({ items }: ActionItemTableProps) {
                           />
                         ) : (
                           item.source
+                        )}
+                      </TableCell>
+                      <TableCell width={250}>
+                        {editRows[item.id] ? (
+                          <TextField
+                            value={item.item}
+                            onChange={(e) =>
+                              handleChange(item.id, "description", e.target.value)
+                            }
+                            fullWidth
+                          />
+                        ) : (
+                          item.item
                         )}
                       </TableCell>
                     </TableRow>
