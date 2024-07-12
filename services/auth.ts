@@ -1,20 +1,19 @@
-"use server";
-
 import { setAuthToken } from "./utils";
+
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 export async function Authenticate(userName: string, password: string, clientId: string) {
   try {
-    const response = await fetch('https://dev.exp-inc.com/EXPDev71/api/users/authenticateUser', {
+    const response = await fetch(`${API_BASE_URL}/api/authenticate`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
-        'offset': "2.0",
       },
       body: JSON.stringify({
         userName,
         password,
-        clientId
+        clientId,
       }),
     });
 
@@ -35,9 +34,7 @@ export async function Authenticate(userName: string, password: string, clientId:
     console.error("Authentication error:", error);
     return {
       status: 500,
-      error: 'Failed to authenticate user'
+      error: 'Failed to authenticate user',
     };
   }
 }
-
-

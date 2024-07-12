@@ -1,10 +1,8 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { getAuthToken } from './services/utils';
 
 export async function middleware(request: NextRequest) {
-  const token = await getAuthToken();
-  console.log({ token });
+  const token = request.cookies.get('auth_token');
   const isAuthenticated = !!token;
 
   const { pathname } = request.nextUrl;

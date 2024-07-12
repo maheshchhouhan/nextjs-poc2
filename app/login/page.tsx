@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-
+import Cookies from "js-cookie";
 import {
   Button,
   TextField,
@@ -23,6 +23,13 @@ export default function LoginPage() {
   const [message, setMessage] = useState("");
   const [severity, setSeverity] = useState<"success" | "error">("success");
 
+  useEffect(() => {
+    const token = Cookies.get("auth_token");
+    if (token) {
+      router.push("/actionItems");
+    }
+  }, [router]);
+
   const handleClose = (
     event?: React.SyntheticEvent | Event,
     reason?: string
@@ -42,7 +49,6 @@ export default function LoginPage() {
     onSubmit: async (values) => {
       try {
         const result = await Authenticate(values.email, values.password, "1");
-        console.log("result: ", result);
         if (result.status !== 200) {
           setSeverity("error");
           setMessage(result.error || "Authentication failed");
@@ -126,7 +132,7 @@ export default function LoginPage() {
         open={open}
         autoHideDuration={10000}
         onClose={handleClose}
-        anchorOrigin={{ vertical: "bottom", horizontal: "right" }} // Set the position to bottom right
+        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
       >
         <Alert onClose={handleClose} severity={severity} sx={{ width: "100%" }}>
           {message}

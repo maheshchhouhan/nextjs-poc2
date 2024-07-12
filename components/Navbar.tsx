@@ -2,27 +2,21 @@
 
 import { AppBar, Toolbar, Typography, Button } from "@mui/material";
 import { useRouter } from "next/navigation";
+import Cookies from "js-cookie";
 import { useEffect, useState } from "react";
 
 export default function Navbar() {
   const router = useRouter();
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [authToken, setAuthToken] = useState(Cookies.get("auth_token"));
 
   useEffect(() => {
-    // Check if the user is authenticated by checking the auth token
-    const checkAuth = async () => {
-      const response = await fetch("/api/auth-token");
-      const authToken = await response.json();
-      setIsAuthenticated(!!authToken);
-    };
-    checkAuth();
-  }, []);
+    setAuthToken(Cookies.get("auth_token"));
+  }, [Cookies.get("auth_token")]);
 
   const handleLogout = async () => {
-    // Clear the authentication token
-    await fetch("/api/logout", {
-      method: "POST",
-    });
+    // Clear the authentication token from cookies
+    Cookies.remove("auth_token");
+
     // Redirect to the login page
     router.push("/login");
   };
@@ -36,7 +30,7 @@ export default function Navbar() {
         <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
           Action Items
         </Typography>
-        {isAuthenticated && (
+        {authToken && (
           <Button color="inherit" onClick={handleLogout}>
             Logout
           </Button>

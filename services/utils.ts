@@ -1,11 +1,9 @@
-import { cookies } from 'next/headers';
+import Cookies from 'js-cookie';
 
 export async function setAuthToken(token: string) {
-  const cookieStore = cookies();
-  cookieStore.set('auth_token', token, { httpOnly: true, secure: true, path: '/' });
+  Cookies.set('auth_token', token, { expires: 7, secure: true });
 }
 
 export async function getAuthToken() {
-  const cookieStore = cookies();
-  return cookieStore.get('auth_token')?.value;
+  return Cookies.get('auth_token');
 }

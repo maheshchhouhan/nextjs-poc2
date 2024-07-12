@@ -1,3 +1,9 @@
-export default function Home() {
-  return <p>Home</p>;
+import ClientRedirect from "@/components/ClientRedirect";
+
+export default function HomePage() {
+  return (
+    <ClientRedirect>
+      <div></div>
+    </ClientRedirect>
+  );
 }
